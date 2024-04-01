@@ -1,17 +1,15 @@
 const express = require("express");
-const router = require("./contactRoutes");
-const roter = express.Router();
+const router = express.Router();
+const {
+  registerUser,
+  loginUser,
+  currentUser,
+} = require("../controllers/userController");
 
-router.post("/register", async (req, res) => {
-  res.send("User is regisered!");
-});
+router.post("/register", registerUser);
 
-router.post("/login", async (req, res) => {
-  res.send("User is login!");
-});
+router.post("/login", loginUser);
 
-router.get("/current-user", async (req, res) => {
-  res.send("Current user!");
-});
+router.get("/current-user", currentUser);
 
 module.exports = router;
