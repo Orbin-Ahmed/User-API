@@ -60,7 +60,7 @@ const loginUser = asyncHandler(async (req, res) => {
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1m" }
+      { expiresIn: "24h" }
     );
     res.status(200).json({ accessToken });
   } else {
@@ -70,7 +70,12 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const currentUser = asyncHandler(async (req, res) => {
-  res.send("User is current successfully");
+  if (req.user) {
+    res.status(200).json(req.user);
+  } else {
+    res.status(401);
+    throw new Error("You are not authorized!");
+  }
 });
 
 module.exports = {
