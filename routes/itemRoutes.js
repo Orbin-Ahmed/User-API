@@ -1,4 +1,5 @@
 const express = require("express");
+const validateToken = require("../middleware/validationHandler");
 const router = express.Router();
 const {
   getItems,
@@ -7,6 +8,8 @@ const {
   updateItemById,
   deleteItemById,
 } = require("../controllers/itemController");
+
+router.use(validateToken);
 
 router.route("/").get(getItems).post(createItem);
 

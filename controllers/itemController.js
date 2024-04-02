@@ -3,7 +3,7 @@ const Item = require("../models/itemModel");
 
 //@desc Get all items
 //@route GET /api/items
-//@access Public
+//@access Private
 const getItems = asyncHandler(async (req, res) => {
   const item = await Item.find();
   res.status(200).json(item);
@@ -11,7 +11,7 @@ const getItems = asyncHandler(async (req, res) => {
 
 //@desc Create item
 //@route POST /api/items
-//@access Public
+//@access Private
 const createItem = asyncHandler(async (req, res) => {
   const { name, quantity, price } = req.body;
   if (!name || !quantity || !price) {
@@ -28,7 +28,7 @@ const createItem = asyncHandler(async (req, res) => {
 
 //@desc Get item by id
 //@route GET /api/items/:id
-//@access Public
+//@access Private
 const getItemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const item = await Item.findById(id);
@@ -41,7 +41,7 @@ const getItemById = asyncHandler(async (req, res) => {
 
 //@desc Update item
 //@route PUT /api/items
-//@access Public
+//@access Private
 const updateItemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const item = await Item.findById(id);
@@ -55,7 +55,7 @@ const updateItemById = asyncHandler(async (req, res) => {
 
 //@desc Update item
 //@route PUT /api/items
-//@access Public
+//@access Private
 const deleteItemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const item = await Item.findById(id);
