@@ -5,7 +5,7 @@ const Contact = require("../models/contactModel");
 //@route GET /api/contacts
 //@access Private
 const getContact = asyncHandler(async (req, res) => {
-  const contacts = await Contact.find();
+  const contacts = await Contact.find({ user_id: req.user.id });
   res.status(200).json(contacts);
 });
 
@@ -22,6 +22,7 @@ const createContact = asyncHandler(async (req, res) => {
     name,
     email,
     phone,
+    user_id: req.user.id,
   });
   res.status(201).json({ message: `Contact ${name} is created.` });
 });
@@ -32,6 +33,12 @@ const createContact = asyncHandler(async (req, res) => {
 const getContactById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const contact = await Contact.findById(id);
+
+  if (contact.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("User don't have permission for this operation!");
+  }
+
   if (!contact) {
     res.status(404);
     throw new Error("Contact not found !");
@@ -49,6 +56,12 @@ const updateContactById = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Contact not found !");
   }
+
+  if (contact.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("User don't have permission for this operation!");
+  }
+
   const updatedContact = await Contact.findByIdAndUpdate(id, req.body, {
     new: true,
   });
@@ -65,6 +78,12 @@ const deleteContactById = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Contact not found !");
   }
+
+  if (contact.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("User don't have permission for this operation!");
+  }
+
   await Contact.findByIdAndDelete(id);
   res.status(200).json(`Contact ${contact.name} deleted successfully.`);
 });

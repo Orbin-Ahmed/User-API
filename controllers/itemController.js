@@ -5,7 +5,7 @@ const Item = require("../models/itemModel");
 //@route GET /api/items
 //@access Private
 const getItems = asyncHandler(async (req, res) => {
-  const item = await Item.find();
+  const item = await Item.find({ user_id: req.user.id });
   res.status(200).json(item);
 });
 
@@ -22,6 +22,7 @@ const createItem = asyncHandler(async (req, res) => {
     name,
     quantity,
     price,
+    user_id: req.user.id,
   });
   res.status(201).json({ message: `Item ${name} is created.` });
 });
@@ -32,6 +33,12 @@ const createItem = asyncHandler(async (req, res) => {
 const getItemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const item = await Item.findById(id);
+
+  if (item.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("User don't have permission for this operation!");
+  }
+
   if (!item) {
     res.status(404);
     throw new Error("Item not found");
@@ -45,10 +52,17 @@ const getItemById = asyncHandler(async (req, res) => {
 const updateItemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const item = await Item.findById(id);
+
+  if (item.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("User don't have permission for this operation!");
+  }
+
   if (!item) {
     res.status(404);
     throw new Error("Item not found");
   }
+
   const updatedItem = await Item.findByIdAndUpdate(id, req.body, { new: true });
   res.status(200).json(updatedItem);
 });
@@ -59,6 +73,12 @@ const updateItemById = asyncHandler(async (req, res) => {
 const deleteItemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const item = await Item.findById(id);
+
+  if (item.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("User don't have permission for this operation!");
+  }
+
   if (!item) {
     res.status(404);
     throw new Error("Item not found");
