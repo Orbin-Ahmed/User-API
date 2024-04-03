@@ -34,16 +34,16 @@ const getContactById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const contact = await Contact.findById(id);
 
-  if (contact.user_id.toString() !== req.user.id) {
-    res.status(403);
-    throw new Error("User don't have permission for this operation!");
-  }
-
-  if (!contact) {
+  if (contact) {
+    if (contact.user_id.toString() !== req.user.id) {
+      res.status(403);
+      throw new Error("User don't have permission for this operation!");
+    }
+    res.status(200).json(contact);
+  } else {
     res.status(404);
     throw new Error("Contact not found !");
   }
-  res.status(200).json(contact);
 });
 
 //@desc Update contact by id
@@ -52,20 +52,20 @@ const getContactById = asyncHandler(async (req, res) => {
 const updateContactById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const contact = await Contact.findById(id);
-  if (!contact) {
+
+  if (contact) {
+    if (contact.user_id.toString() !== req.user.id) {
+      res.status(403);
+      throw new Error("User don't have permission for this operation!");
+    }
+    const updatedContact = await Contact.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    res.status(200).json(updatedContact);
+  } else {
     res.status(404);
     throw new Error("Contact not found !");
   }
-
-  if (contact.user_id.toString() !== req.user.id) {
-    res.status(403);
-    throw new Error("User don't have permission for this operation!");
-  }
-
-  const updatedContact = await Contact.findByIdAndUpdate(id, req.body, {
-    new: true,
-  });
-  res.status(200).json(updatedContact);
 });
 
 //@desc Delete contact by id
@@ -74,18 +74,19 @@ const updateContactById = asyncHandler(async (req, res) => {
 const deleteContactById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const contact = await Contact.findById(id);
-  if (!contact) {
+
+  if (contact) {
+    if (contact.user_id.toString() !== req.user.id) {
+      res.status(403);
+      throw new Error("User don't have permission for this operation!");
+    }
+
+    await Contact.findByIdAndDelete(id);
+    res.status(200).json(`Contact ${contact.name} deleted successfully.`);
+  } else {
     res.status(404);
     throw new Error("Contact not found !");
   }
-
-  if (contact.user_id.toString() !== req.user.id) {
-    res.status(403);
-    throw new Error("User don't have permission for this operation!");
-  }
-
-  await Contact.findByIdAndDelete(id);
-  res.status(200).json(`Contact ${contact.name} deleted successfully.`);
 });
 
 module.exports = {

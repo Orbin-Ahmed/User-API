@@ -33,17 +33,16 @@ const createItem = asyncHandler(async (req, res) => {
 const getItemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const item = await Item.findById(id);
-
-  if (item.user_id.toString() !== req.user.id) {
-    res.status(403);
-    throw new Error("User don't have permission for this operation!");
-  }
-
-  if (!item) {
+  if (item) {
+    if (item.user_id.toString() !== req.user.id) {
+      res.status(403);
+      throw new Error("User don't have permission for this operation!");
+    }
+    res.status(200).json(item);
+  } else {
     res.status(404);
     throw new Error("Item not found");
   }
-  res.status(200).json(item);
 });
 
 //@desc Update item
@@ -53,18 +52,19 @@ const updateItemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const item = await Item.findById(id);
 
-  if (item.user_id.toString() !== req.user.id) {
-    res.status(403);
-    throw new Error("User don't have permission for this operation!");
-  }
-
-  if (!item) {
+  if (item) {
+    if (item.user_id.toString() !== req.user.id) {
+      res.status(403);
+      throw new Error("User don't have permission for this operation!");
+    }
+    const updatedItem = await Item.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    res.status(200).json(updatedItem);
+  } else {
     res.status(404);
     throw new Error("Item not found");
   }
-
-  const updatedItem = await Item.findByIdAndUpdate(id, req.body, { new: true });
-  res.status(200).json(updatedItem);
 });
 
 //@desc Update item
@@ -74,17 +74,17 @@ const deleteItemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const item = await Item.findById(id);
 
-  if (item.user_id.toString() !== req.user.id) {
-    res.status(403);
-    throw new Error("User don't have permission for this operation!");
-  }
-
-  if (!item) {
+  if (item) {
+    if (item.user_id.toString() !== req.user.id) {
+      res.status(403);
+      throw new Error("User don't have permission for this operation!");
+    }
+    await Item.findByIdAndDelete(id);
+    res.status(200).json(`Item ${item.name} deleted successfully`);
+  } else {
     res.status(404);
     throw new Error("Item not found");
   }
-  await Item.findByIdAndDelete(id);
-  res.status(200).json(`Item ${item.name} deleted successfully`);
 });
 
 module.exports = {
