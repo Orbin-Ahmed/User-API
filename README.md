@@ -10,9 +10,7 @@ This Node.js and Express.js application provides a robust framework for user reg
     - Registration with email, password.
     - Login using email and password with secure password hashing.
     - Authentication types:
-        - Basic authentication
         - JWT (JSON Web Token) authentication
-        - Session-based authentication
 - **Product Management:**
     - Create, read, update, and delete products.
     - Secure storage and access of product data.
